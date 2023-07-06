@@ -223,28 +223,45 @@ int intToStr(long int num, char *str, int base) {
   return i;
 }
 
+//TODO для чего нужен format?
 int s21_sprintf(char *str, const char *format, ...) {
   char *s;
+  //TODO Статический массив чаров. Что значит d?
   char dstr[1024];
+  //TODO что значит u?
   char ustr[1024];
+  //TODO что значит o?
   char ostr[1024];
+  //TODO Чем отличается min_zero от min_zerog?
   int min_zero;
+  //TODO что такое min_zerog?
   int min_zerog;
+  //TODO для чего pstr?
   char pstr[1024];
   int *num;
 
+  //TODO va_list (из stdarg) используем для ПЕРЕМЕННОГО количества аргументов
   va_list args;
   int i = 0, j = 0;
   long int_temp = 0;
   double float_temp = 0;
 
+  //TODO используется для инициализации va_list
   va_start(args, format);
 
+  //TODO как это работает? когда format[i] становится 0?
   while (format[i]) {
+    //TODO почему именно 6?
     int precision = 6;
+    //TODO видимо, format[i] берёт текущее значение внутри args
+    // наверно, в массив чаров *format попадает строка из символов
+
+    // Итак, если мы наткнулись на '%'
     if (format[i] == '%') {
+      //сдвигаем i вперед на символ для следующей итерации по format
       i++;
       int flags = 0;
+      
       while (format[i] == '-' || format[i] == '+' || format[i] == '0' ||
              format[i] == ' ' || format[i] == '#') {
         switch (format[i]) {
@@ -561,9 +578,13 @@ int s21_sprintf(char *str, const char *format, ...) {
         default:
           str[j++] = format[i];
       }
-    } else {
+    }
+    // Если же текущий символ - не процент, то
+    // просто добавляем в переданный в sprintf буфер текущий символ
+    else {
       str[j++] = format[i];
     }
+    // А где ещё увеличивается этот счетчик?
     i++;
   }
   va_end(args);
