@@ -21,9 +21,6 @@ $(PROJECT).a:
 	ranlib $(PROJECT).a
 	rm -rf *.o
 
-$(OBJECTS): $(SOURCES)
-	$(CC) $(CFLAGS) -c $< -o $@
-
 test: $(PROJECT).a
 	$(CC) *.c $(PROJECT).a $(FLAGS_CHECK) -o test
 	./test
