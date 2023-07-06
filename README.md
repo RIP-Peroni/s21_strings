@@ -14,4 +14,5 @@ test_main.h:4:10: fatal error: check.h: No such file or directory
       |          ^~~~~~~~~
 
 УДАЛОСЬ РЕШИТЬ ПРИ ПОМОЩИ
-sudo apt-get install check
+
+```sudo apt-get install check```
