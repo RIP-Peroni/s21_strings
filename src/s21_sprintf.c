@@ -57,7 +57,11 @@ int float_print(int flags, char *buffer, int field_width, int len,
 
 static int s21_skip_atoi(const char *s) {
   int i = 0;
-  while (is_digit(*s)) i = i * 10 + (*s++) - '0';
+  while (is_digit(*s)) {
+    i = i * 10 + (*s++) - '0';
+  }
+  //возвращает число, кастуя ASCII цифры в число int
+  //например, s21_skip_atoi("432%d") == 432
   return i;
 }
 
@@ -67,6 +71,8 @@ int int_len(int num) {
     num /= 10;
     i++;
   }
+  //возвращает по сути количество разрядов в int'е
+  //переданном в функцию
   return i;
 }
 
@@ -223,7 +229,6 @@ int intToStr(long int num, char *str, int base) {
   return i;
 }
 
-//TODO для чего нужен format?
 int s21_sprintf(char *str, const char *format, ...) {
   char *s;
   //TODO Статический массив чаров. Что значит d?
@@ -260,12 +265,24 @@ int s21_sprintf(char *str, const char *format, ...) {
     if (format[i] == '%') {
       //сдвигаем i вперед на символ для следующей итерации по format
       i++;
+      //переменную, в которую записывается "значение" флагов, устанавливаем на 0
       int flags = 0;
       
+      //последующие вызовы format[i] берут следующий char в строке
+      //итак, если это один символов '-+0# ',
+      //то входим в цикл, в котором выбираем следующий чар.
       while (format[i] == '-' || format[i] == '+' || format[i] == '0' ||
              format[i] == ' ' || format[i] == '#') {
+        // в случае, если следующий символ в нашей строке '-+0 ', то flags присваевается значение
+        // при помощи побитового ИЛИ
         switch (format[i]) {
           case '-':
+            //flags = flags | LEFT
+            //flags = 0 | 10000
+            //flags = 10000
+            //а если бы flags был уже например SPACE
+            //flags = 100 | 10000
+            //flags = 10100 (20 в десятичной)
             flags |= LEFT;
             break;
           case '+':
@@ -281,15 +298,30 @@ int s21_sprintf(char *str, const char *format, ...) {
             flags |= ZEROPAD;
             break;
         }
+        // но для чего вообще нужно побитовое присвоение?
+        // чем оно лучше/удобнее?
+
+        //увеличиваем счётчик для format[i]
         i++;
       }
-      // Получение ширины поля
+
+      /* Получение ширины поля */
+      //почему изначально на -1?
       int field_width = -1;
       if (is_digit(format[i])) {
+        // в s21_skip_atoi передаётся ССЫЛКА на format[i]
+        // видимо, с того места, на котором остановились
         field_width = s21_skip_atoi(&format[i]);
+        //прибавляем к i количество "взятых" символов, чтобы идти дальше по format
         i += int_len(field_width);
-      } else if (format[i] == '*') {
+      }
+      // если же в format лежит не числовой чар, а звёздочка
+      // звёздочка указывает на то, что ширина будет указана в отдельной переменной, а не "по месту"
+      // sprintf(buffer, "%*d", width, value);
+      else if (format[i] == '*') {
+        // сразу увеличиваем счетчик
         i++;
+        // получаем ширину поля из массива args
         field_width = va_arg(args, int);
         if (field_width < 0) {
           field_width = -field_width;
