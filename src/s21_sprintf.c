@@ -76,7 +76,7 @@ int int_len(int num) {
   return i;
 }
 
-static char s21_number(char *str, long num, int base, int size, int precision,
+int s21_number(char *str, long num, int base, int size, int precision,
                        int type) {
   static char *lower_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
   static char *upper_digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -84,9 +84,16 @@ static char s21_number(char *str, long num, int base, int size, int precision,
   char *dig = lower_digits;
   int i, z = 0;
 
-  if (type & UPPERCASE) dig = upper_digits;
-  if (type & LEFT) type &= ~ZEROPAD;
-  if (base < 2 || base > 36) return 0;
+  if (type & UPPERCASE) {
+    dig = upper_digits;
+  }
+  // ~ - bitwise NOT operator
+  if (type & LEFT) {
+    type &= ~ZEROPAD;
+  }
+  if (base < 2 || base > 36) {
+    return 0;
+  }
 
   c = (type & ZEROPAD) ? '0' : ' ';
   sign = 0;
@@ -433,8 +440,12 @@ int s21_sprintf(char *str, const char *format, ...) {
             int_temp = va_arg(args, long int);
           } else if (qualifier == 'h') {
             int_temp = va_arg(args, int);
-            if (int_temp > 32767) int_temp = (int_temp % 32767) - 32769;
-            if (int_temp < -32768) int_temp = (int_temp % 32768) + 32768;
+            if (int_temp > 32767) {
+              int_temp = (int_temp % 32767) - 32769;
+            }
+            if (int_temp < -32768) {
+              int_temp = (int_temp % 32768) + 32768;
+            }
           } else {
             int_temp = va_arg(args, int);
           }

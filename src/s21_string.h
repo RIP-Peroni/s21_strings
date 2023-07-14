@@ -25,7 +25,7 @@ int float_print(int flags, char *buffer, int field_width, int len,
                 int min_zero);
 static int s21_skip_atoi(const char *s);
 int int_len(int num);
-static char s21_number(char *str, long num, int base, int size, int precision,
+int s21_number(char *str, long num, int base, int size, int precision,
                        int type);
 int float_to_string(double num, char *str, int precision, int stop_on_zeroes,
                     int flags);
