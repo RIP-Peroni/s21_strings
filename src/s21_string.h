@@ -26,7 +26,7 @@ int float_print(int flags, char *buffer, int field_width, int len,
 static int s21_skip_atoi(const char *s);
 int int_len(int num);
 int s21_number(char *str, long num, int base, int size, int precision,
-                       int type);
+               int type);
 int float_to_string(double num, char *str, int precision, int stop_on_zeroes,
                     int flags);
 void reverse(char *str, int length);

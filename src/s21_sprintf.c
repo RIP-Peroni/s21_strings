@@ -23,7 +23,9 @@ int float_print(int flags, char *buffer, int field_width, int len,
   c = (flags & ZEROPAD) ? '0' : ' ';
 
   if (!(flags & LEFT) && !(flags & ZEROPAD) && (flags & SIGN)) {
-    while (--field > 0) str[j++] = c;
+    while (--field > 0) {
+      str[j++] = c;
+    }
   }
 
   if (flags & SIGN) {
@@ -77,7 +79,7 @@ int int_len(int num) {
 }
 
 int s21_number(char *str, long num, int base, int size, int precision,
-                       int type) {
+               int type) {
   static char *lower_digits = "0123456789abcdefghijklmnopqrstuvwxyz";
   static char *upper_digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   char c, sign, tmp[66];
@@ -131,23 +133,34 @@ int s21_number(char *str, long num, int base, int size, int precision,
   if (i > precision) precision = i;
   size -= precision;
   if (!(type & (ZEROPAD | LEFT)))
-    while (size-- > 0) *str++ = ' ';
-  if (sign) *str++ = sign;
+    while (size-- > 0) {
+      *str++ = ' ';
+    }
+  if (sign) {
+    *str++ = sign;
+  }
 
   if (type & HEX_PREP) {
-    if (base == 8)
+    if (base == 8) {
       *str++ = '0';
-    else if (base == 16 && z == 1) {
+    } else if (base == 16 && z == 1) {
       *str++ = '0';
       *str++ = dig[33];
     }
   }
 
-  if (!(type & LEFT))
+  if (!(type & LEFT)) {
     while (size-- > 0) *str++ = c;
-  while (i < precision--) *str++ = '0';
-  while (i-- > 0) *str++ = tmp[i];
-  while (size-- > 0) *str++ = ' ';
+  }
+  while (i < precision--) {
+    *str++ = '0';
+  }
+  while (i-- > 0) {
+    *str++ = tmp[i];
+  }
+  while (size-- > 0) {
+    *str++ = ' ';
+  }
 
   *str++ = '\0';
   return 0;
@@ -239,35 +252,35 @@ int intToStr(long int num, char *str, int base) {
 int s21_sprintf(char *str, const char *format, ...) {
   // массив чаров, который будет использован аргумента-строки
   char *s;
-  //TODO Статический массив чаров. Что значит d?
+  // TODO Статический массив чаров. Что значит d?
   char dstr[1024];
-  //TODO что значит u?
+  // TODO что значит u?
   char ustr[1024];
-  //TODO что значит o?
+  // TODO что значит o?
   char ostr[1024];
-  //TODO Чем отличается min_zero от min_zerog?
+  // TODO Чем отличается min_zero от min_zerog?
   int min_zero;
-  //TODO что такое min_zerog?
+  // TODO что такое min_zerog?
   int min_zerog;
-  //TODO для чего pstr?
+  // TODO для чего pstr?
   char pstr[1024];
   int *num;
 
-  //TODO va_list (из stdarg) используем для ПЕРЕМЕННОГО количества аргументов
+  // TODO va_list (из stdarg) используем для ПЕРЕМЕННОГО количества аргументов
   va_list args;
   int i = 0, j = 0;
   long int_temp = 0;
   double float_temp = 0;
 
-  //TODO используется для инициализации va_list
+  // TODO используется для инициализации va_list
   va_start(args, format);
 
-  //TODO как это работает? когда format[i] становится 0?
+  // TODO как это работает? когда format[i] становится 0?
   while (format[i]) {
-    //TODO почему именно 6?
+    // TODO почему именно 6?
     int precision = 6;
-    //TODO видимо, format[i] берёт текущее значение внутри args
-    // наверно, в массив чаров *format попадает строка из символов
+    // TODO видимо, format[i] берёт текущее значение внутри args
+    //  наверно, в массив чаров *format попадает строка из символов
 
     // Итак, если мы наткнулись на '%'
     if (format[i] == '%') {
@@ -275,24 +288,25 @@ int s21_sprintf(char *str, const char *format, ...) {
       i++;
       //переменную, в которую записывается "значение" флагов, устанавливаем на 0
       int flags = 0;
-      
+
       //последующие вызовы format[i] берут следующий char в строке
       //итак, если это один символов '-+0# ',
       //то входим в цикл, в котором выбираем следующий чар.
       while (format[i] == '-' || format[i] == '+' || format[i] == '0' ||
              format[i] == ' ' || format[i] == '#') {
         //ПОДСПЕЦИФИКАТОРЫ ШИРИНЫ
-        // в случае, если следующий символ в нашей строке '-+0 ', то flags присваевается значение
-        // при помощи побитового ИЛИ
+        // в случае, если следующий символ в нашей строке '-+0 ', то flags
+        // присваевается значение при помощи побитового ИЛИ
         switch (format[i]) {
-          // выравнивание по левому краю в пределах заданной ширины поля (по умолчанию выравнивается по правому)
+          // выравнивание по левому краю в пределах заданной ширины поля (по
+          // умолчанию выравнивается по правому)
           case '-':
-            //flags = flags | LEFT
-            //flags = 0 | 10000
-            //flags = 10000
+            // flags = flags | LEFT
+            // flags = 0 | 10000
+            // flags = 10000
             //а если бы flags был уже например SPACE
-            //flags = 100 | 10000
-            //flags = 10100 (20 в десятичной)
+            // flags = 100 | 10000
+            // flags = 10100 (20 в десятичной)
             flags |= LEFT;
             break;
           // заставляет явно указывать знак + или - даже для положительных чисел
@@ -303,14 +317,16 @@ int s21_sprintf(char *str, const char *format, ...) {
           case ' ':
             flags |= SPACE;
             break;
-          // заставляет ставить дополнительные символы в зависимости от спецификаторов:
-          // o, x, X - перед числом вставляется 0, 0x или 0X соответственно
-          // e, E, f - заставляет содержать десятичную точку, даже если за ней не последует никаких цифр
-          // g, G - такой же результат как с e, E, f, но конечные нули не удаляются
+          // заставляет ставить дополнительные символы в зависимости от
+          // спецификаторов: o, x, X - перед числом вставляется 0, 0x или 0X
+          // соответственно e, E, f - заставляет содержать десятичную точку,
+          // даже если за ней не последует никаких цифр g, G - такой же
+          // результат как с e, E, f, но конечные нули не удаляются
           case '#':
             flags |= HEX_PREP;
             break;
-          //заполняет число нулями слева вместо пробелов, когда указан спецификатор ширины
+          //заполняет число нулями слева вместо пробелов, когда указан
+          //спецификатор ширины
           case '0':
             flags |= ZEROPAD;
             break;
@@ -329,18 +345,20 @@ int s21_sprintf(char *str, const char *format, ...) {
         // в s21_skip_atoi передаётся ССЫЛКА на format[i]
         // видимо, с того места, на котором остановились
         field_width = s21_skip_atoi(&format[i]);
-        //прибавляем к i количество "взятых" символов, чтобы идти дальше по format
+        //прибавляем к i количество "взятых" символов, чтобы идти дальше по
+        // format
         i += int_len(field_width);
       }
       // если же в format лежит не числовой чар, а звёздочка
-      // звёздочка указывает на то, что ширина будет указана в отдельной переменной, а не "по месту"
-      // sprintf(buffer, "%*d", width, value);
+      // звёздочка указывает на то, что ширина будет указана в отдельной
+      // переменной, а не "по месту" sprintf(buffer, "%*d", width, value);
       else if (format[i] == '*') {
         // сразу увеличиваем счетчик
         i++;
         // получаем ширину поля из массива args
         field_width = va_arg(args, int);
-        // если ширина поля отрицательная, то делаем её положительной, а направление флагов меняем на 0
+        // если ширина поля отрицательная, то делаем её положительной, а
+        // направление флагов меняем на 0
         if (field_width < 0) {
           field_width = -field_width;
           flags |= LEFT;
@@ -359,7 +377,8 @@ int s21_sprintf(char *str, const char *format, ...) {
           if (precision == 0) {
             i += 1;
           }
-          // если точность  не равна 0, То сдвигаем счетчик ровно на длину точности
+          // если точность  не равна 0, То сдвигаем счетчик ровно на длину
+          // точности
           else
             i += int_len(precision);
         }
@@ -374,15 +393,18 @@ int s21_sprintf(char *str, const char *format, ...) {
           precision = 0;
         }
         // если вдруг указали отрицательное значение, точность также равна 0
-        if (precision < 0) precision = 0;
+        if (precision < 0) {
+          precision = 0;
+        }
       }
 
       /* Получение спецификатора (классификатора) преобразования */
       int qualifier = 0;
       // Специальные спецификаторы l, L, h
       // h короткий int (без знака) - для целочисленных спец-в: i, d, o, u, x, X
-      // l длинный int (без знака) для целочисленных спец-в: (см.выше) либо же широкий (что значит широкий?!) для спец-в c и s
-      // L длинный double для спец-в с плавающей точкой: e, E, f, g, G
+      // l длинный int (без знака) для целочисленных спец-в: (см.выше) либо же
+      // широкий (что значит широкий?!) для спец-в c и s L длинный double для
+      // спец-в с плавающей точкой: e, E, f, g, G
       if (format[i] == 'l' || format[i] == 'L' || format[i] == 'h') {
         qualifier = format[i];
         i++;
@@ -393,10 +415,11 @@ int s21_sprintf(char *str, const char *format, ...) {
         case 'c':
           // если flags не установлен на LEFT
           // добавляем пробелы слева, т.е. равняем справа
-          // на указанную ширину 
+          // на указанную ширину
           if (!(flags & LEFT)) {
-            // "--" сначала уменьшает field_width, а потом используется в выражении
-            // j сначала используется в выражении, потом "++" увеличивает j
+            // "--" сначала уменьшает field_width, а потом используется в
+            // выражении j сначала используется в выражении, потом "++"
+            // увеличивает j
             while (--field_width > 0) {
               str[j++] = ' ';
             }
@@ -424,7 +447,8 @@ int s21_sprintf(char *str, const char *format, ...) {
             }
           }
           for (int p = 0; p < slen; ++p) {
-            // *s++ - получаем текущий элемент "массива" с чарами, а потом сдвигаем указатель на массив на единицу
+            // *s++ - получаем текущий элемент "массива" с чарами, а потом
+            // сдвигаем указатель на массив на единицу
             str[j++] = *s++;
           }
           // см.выше
@@ -459,8 +483,12 @@ int s21_sprintf(char *str, const char *format, ...) {
             int_temp = va_arg(args, unsigned long int);
           } else if (qualifier == 'h') {
             int_temp = va_arg(args, int);
-            if (int_temp > 65536 || int_temp < -65536) int_temp %= 65536;
-            if (int_temp < 0) int_temp += 65536;
+            if (int_temp > 65536 || int_temp < -65536) {
+              int_temp %= 65536;
+            }
+            if (int_temp < 0) {
+              int_temp += 65536;
+            }
           } else {
             int_temp = va_arg(args, unsigned int);
           }
@@ -494,8 +522,12 @@ int s21_sprintf(char *str, const char *format, ...) {
             int_temp = va_arg(args, long long int);
           } else if (qualifier == 'h') {
             int_temp = va_arg(args, int);
-            if (int_temp > 65535 || int_temp < -65536) int_temp %= 65536;
-            if (int_temp < 0) int_temp += 65536;
+            if (int_temp > 65535 || int_temp < -65536) {
+              int_temp %= 65536;
+            }
+            if (int_temp < 0) {
+              int_temp += 65536;
+            }
           } else {
             int_temp = va_arg(args, int);
           }
@@ -506,7 +538,9 @@ int s21_sprintf(char *str, const char *format, ...) {
           break;
         case 'f':
           min_zero = 0;
-          if (precision < 0) precision = 6;
+          if (precision < 0) {
+            precision = 6;
+          }
           if (qualifier == 'L') {
             float_temp = va_arg(args, long double);
           } else {
@@ -531,7 +565,9 @@ int s21_sprintf(char *str, const char *format, ...) {
         case 'E':
         case 'e':
           min_zerog = 0;
-          if (precision < 0) precision = 6;
+          if (precision < 0) {
+            precision = 6;
+          }
           if (qualifier == 'L') {
             float_temp = va_arg(args, long double);
           } else {
@@ -575,16 +611,21 @@ int s21_sprintf(char *str, const char *format, ...) {
           } else {
             double fltemp = float_temp;
             int h = 0;
-            while (fltemp >= 10) fltemp /= 10;
+            while (fltemp >= 10) {
+              fltemp /= 10;
+            }
             for (h = 0; h < precision; h++) {
               fltemp *= 10;
             }
             long int int_temp = (long int)(fltemp + 0.5);
-            while (h--) int_temp /= 10;
+            while (h--) {
+              int_temp /= 10;
+            }
             if ((format[i] == 'G' || format[i] == 'g') &&
                 ((float_temp >= 999999) && (float_temp < 1000010.0)) &&
-                precision == 0)
+                precision == 0) {
               flags |= POINT_NO;
+            }
             if ((float_temp < 1.0) && float_temp != 0) {
               while ((float_temp < 1.0)) {
                 float_temp *= 10.0;
@@ -640,8 +681,9 @@ int s21_sprintf(char *str, const char *format, ...) {
               buf[len++] = (format[i] == 'e') ? 'e' : 'E';
               buf[len++] = '+';
             }
-            if (((m < 10) && (b == 0)) || ((b < 10) && (m == 0)))
+            if (((m < 10) && (b == 0)) || ((b < 10) && (m == 0))) {
               buf[len++] = '0';
+            }
             char buffer_2[10];
             int le = intToStr((b > 0) ? b : m, buffer_2, 10);
             s21_strcpy(buf + len, buffer_2);
@@ -657,7 +699,9 @@ int s21_sprintf(char *str, const char *format, ...) {
         case 'p':
           if (field_width == -1) {
             field_width = 14;
-            if (flags & PLUS) field_width = 15;
+            if (flags & PLUS) {
+              field_width = 15;
+            }
             flags |= ZEROPAD;
           }
           flags |= SIGN;
